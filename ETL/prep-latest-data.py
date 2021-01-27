@@ -50,6 +50,7 @@ def get_state_data(pop, state_name_mapping):
         'people_vaccinated': 'vaccinations',
         'people_fully_vaccinated': 'full_vaccinations',
     })
+    v['state_name'] = v.state_name.str.replace('New York State', 'New York')
     data = x['date state death positive negative recovered dataQualityGrade'
              ' hospitalized hospitalizedCurrently inIcuCumulative inIcuCurrently'
              ' onVentilatorCumulative onVentilatorCurrently'
