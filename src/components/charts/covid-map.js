@@ -161,7 +161,9 @@ const CovidMap = (props) => {
     for (const iday of Object.keys(DATA.data)) {
       for (const iid of Object.keys(DATA.data[iday])) {
         const val = extractValue(DATA.data[iday][iid])
-        vals.push(val)
+        if (val) {
+          vals.push(val)
+        }
       }
     }
     var sortVals = vals.sort((a,b) => a - b)
