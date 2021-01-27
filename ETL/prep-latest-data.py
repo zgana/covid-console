@@ -88,7 +88,9 @@ def get_state_data(pop, state_name_mapping):
     data = (
         data
         .merge(pop, on='state')
-        .merge(v['state_name date vaccinations full_vaccinations'.split()], on='state_name date'.split())
+        .merge(v['state_name date vaccinations full_vaccinations'.split()],
+               on='state_name date'.split(),
+               how='left')
     )
 
     return data
