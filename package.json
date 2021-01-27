@@ -1,0 +1,65 @@
+{
+  "name": "covid-console",
+  "private": true,
+  "description": "An analysis-focused Covid-19 site.",
+  "version": "0.1.0",
+  "license": "0BSD",
+  "scripts": {
+    "build": "gatsby build",
+    "develop": "gatsby develop",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "start": "npm run develop",
+    "serve": "gatsby serve",
+    "clean": "gatsby clean",
+    "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1"
+  },
+  "dependencies": {
+    "@use-it/interval": "^1.0.0",
+    "@visx/axis": "^1.2.0",
+    "@visx/clip-path": "^1.0.0",
+    "@visx/curve": "^1.0.0",
+    "@visx/gradient": "^1.0.0",
+    "@visx/grid": "^1.3.0",
+    "@visx/group": "^1.0.0",
+    "@visx/scale": "^1.1.0",
+    "@visx/shape": "^1.2.0",
+    "@visx/text": "^1.3.0",
+    "@visx/zoom": "^1.3.0",
+    "chroma-js": "^2.1.0",
+    "cliui": "^7.0.1",
+    "d3": "^6.2.0",
+    "gatsby": "^2.26.1",
+    "gatsby-plugin-google-gtag": "^2.4.0",
+    "gatsby-plugin-typography": "^2.7.0",
+    "gatsby-source-filesystem": "^2.7.0",
+    "gatsby-transformer-csv": "^2.6.0",
+    "query-string": "^6.13.7",
+    "rc-slider": "^9.6.4",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-dropdown": "^1.9.0",
+    "react-helmet": "^6.1.0",
+    "react-hotkeys": "^2.0.0",
+    "react-select": "^3.1.1",
+    "react-svg-tooltip": "0.0.11",
+    "react-typography": "^0.16.19",
+    "swr": "^0.3.9",
+    "topojson-client": "^3.1.0",
+    "typescript": "^4.1.3",
+    "typography": "^0.16.19",
+    "typography-theme-fairy-gates": "^0.16.19",
+    "typography-theme-lincoln": "^0.16.19",
+    "unfetch": "^4.2.0",
+    "yargs": "^16.1.1"
+  },
+  "devDependencies": {
+    "prettier": "2.1.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gatsbyjs/gatsby-starter-hello-world"
+  },
+  "bugs": {
+    "url": "https://github.com/gatsbyjs/gatsby/issues"
+  }
+}
