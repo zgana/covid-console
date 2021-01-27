@@ -1,0 +1,21 @@
+.spinner img {
+    background: transparent;
+    animation: rotation 10s infinite linear;
+    margin: 0;
+    padding: 0;
+}
+
+.spinner span {
+    margin: 0;
+    padding: 0 .5em;
+    font-size: 150%;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(359deg);
+    }
+}

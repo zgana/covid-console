@@ -1,0 +1,26 @@
+
+a:link, a:visited, a:active {
+    background-image: none;
+    color: SteelBlue;
+    text-decoration: none;
+    text-shadow: none;
+    font-weight: "bold";
+}
+a:hover {
+    background-image: none;
+    color: SteelBlue;
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-shadow: none;
+    font-weight: "bold";
+}
+
+h1 {
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+
+ul li {
+    margin: 0;
+}
