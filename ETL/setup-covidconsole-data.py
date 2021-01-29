@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import json
 import os
 
 import numpy as np
@@ -41,6 +42,12 @@ os.makedirs(data_dir, exist_ok=True)
 print(f'Writing to {data_dir} ...')
 wD.to_csv(f'{data_dir}/data.csv', index=False)
 wmd.to_csv(f'{data_dir}/META.csv', index=False)
+w_sources = [
+    dict(name='Our World In Data',
+         url='https://github.com/owid/covid-19-data/tree/master/public/data/')
+]
+with open(f'{data_dir}/SOURCES.json', 'wt') as f:
+    json.dump(w_sources, f)
 
 
 
@@ -67,6 +74,12 @@ print(f'Writing to {data_dir} ...')
 cD.to_csv(f'{data_dir}/data.csv', index=False)
 cDrecent.to_csv(f'{data_dir}/data-recent.csv', index=False)
 cmd.to_csv(f'{data_dir}/META.csv', index=False)
+c_sources = [
+    dict(name='The New York Times',
+         url='https://github.com/nytimes/covid-19-data')
+]
+with open(f'{data_dir}/SOURCES.json', 'wt') as f:
+    json.dump(c_sources, f)
 
 # obnoxiously coupled to `cmd`; desperately needs to be refactored
 statefips = (
@@ -86,3 +99,11 @@ os.makedirs(data_dir, exist_ok=True)
 print(f'Writing to {data_dir} ...')
 sD.to_csv(f'{data_dir}/data.csv', index=False)
 smd.to_csv(f'{data_dir}/META.csv', index=False)
+s_sources = [
+    dict(name='Our World In Data',
+         url='https://github.com/owid/covid-19-data/tree/master/public/data/vaccinations/'),
+    dict(name='The COVID Tracking Project',
+         url='https://covidtracking.com/')
+]
+with open(f'{data_dir}/SOURCES.json', 'wt') as f:
+    json.dump(s_sources, f)
