@@ -100,10 +100,10 @@ print(f'Writing to {data_dir} ...')
 sD.to_csv(f'{data_dir}/data.csv', index=False)
 smd.to_csv(f'{data_dir}/META.csv', index=False)
 s_sources = [
+    dict(name='The COVID Tracking Project',
+         url='https://covidtracking.com/'),
     dict(name='Our World In Data',
          url='https://github.com/owid/covid-19-data/tree/master/public/data/vaccinations/'),
-    dict(name='The COVID Tracking Project',
-         url='https://covidtracking.com/')
 ]
 with open(f'{data_dir}/SOURCES.json', 'wt') as f:
     json.dump(s_sources, f)
