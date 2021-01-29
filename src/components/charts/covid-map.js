@@ -17,6 +17,7 @@ import useInterval from '@use-it/interval'
 import Loading from '../loading'
 import styles from './covid-charts.module.css'
 import useLoad, { allDataSpecs, statLabels, normLabels } from '../data'
+import Citations from './citations.js'
 
 
 const SliderWithTooltip = createSliderWithTooltip(Slider)
@@ -26,7 +27,7 @@ const MapPatch = (props) => {
 
   const ref = React.createRef()
   const {
-    g, imeta, metaToName,
+    g, iMETA, metaToName,
     getPath, value,
     colorScale, maxY,
     width, height,
@@ -41,7 +42,7 @@ const MapPatch = (props) => {
     return getPath.centroid(g)
   }, [g, getPath])
 
-  if (! (g && imeta && value)) {
+  if (! (g && iMETA && value)) {
     return ( <> </> )
   }
 
@@ -54,17 +55,17 @@ const MapPatch = (props) => {
 
   const id = g.id
 
-  const tipLocationLabel = metaToName(imeta)
+  const tipLocationLabel = metaToName(iMETA)
   // var tipLocationLabel = '(error)'
   // switch (geoFeature) {
   //   case 'counties':
-  //     tipLocationLabel = `${imeta.county_name}, ${imeta.state_name}`
+  //     tipLocationLabel = `${iMETA.county_name}, ${iMETA.state_name}`
   //     break;
   //   case 'states':
-  //     tipLocationLabel = imeta.state_name
+  //     tipLocationLabel = iMETA.state_name
   //     break;
   //   case 'countries':
-  //     tipLocationLabel = imeta.country_name
+  //     tipLocationLabel = iMETA.country_name
   //     break;
   //   default:
   //     tipLocationLabel = '(error)'
@@ -96,7 +97,7 @@ const MapPatch = (props) => {
               {tipLocationLabel}
             </text>
             <text x={tipXtext} y={tipY} dy={4*tipFontSize} fill="white" fontSize={tipFontSize}>
-              Population {imeta.population}
+              Population {iMETA.population}
             </text>
           </Tooltip>
         )
@@ -113,9 +114,9 @@ const CovidMap = (props) => {
   const ref = useRef()
 
   const dataSpec = props.dataSpec
-  const { geometry, DATA, meta, metaToName, geoFeatures, projection } = useLoad(dataSpec)
+  const { geometry, DATA, META, metaToName, geoFeatures, projection } = useLoad(dataSpec)
   // console.log(geometry)
-  // const { geometry, meta, DATA, geoFeatures } = props
+  // const { geometry, META, DATA, geoFeatures } = props
   const { day, stat, plotNorm, plotLog } = props
 
   const geoFeature = geoFeatures[0]
@@ -126,14 +127,14 @@ const CovidMap = (props) => {
       const value = d[stat]
       var norm = 1
       if (plotNorm === "population") {
-        norm = meta[d.id].population
+        norm = META[d.id].population
       }
       else if (plotNorm === "land_area") {
-        norm = Math.max(meta[d.id].land_area, 1)
+        norm = Math.max(META[d.id].land_area, 1)
       }
       return value / norm
     },
-    [plotNorm, meta, stat]
+    [plotNorm, META, stat]
   )
 
   const minPosY = useMemo(() => {
@@ -327,7 +328,7 @@ const CovidMap = (props) => {
     const cur = dayData[f.id]
     var value = cur ? extractValue(cur) : "-"
     value = value ? value : '-'
-    const imeta = meta ? meta[f.id] : {}
+    const iMETA = META ? META[f.id] : {}
 
     return (
       <MapPatch
@@ -335,14 +336,14 @@ const CovidMap = (props) => {
         g={f}
         getPath={path}
         geoFeature={geoFeature}
-        imeta={imeta}
+        iMETA={iMETA}
         metaToName={metaToName}
         value={value}
         colorScale={colorScale}
         width={width}
         height={height}
         maxY={maxY}
-        ready={cur && DATA && meta}
+        ready={cur && DATA && META}
       />
     )
 
@@ -381,6 +382,7 @@ const CovidMap = (props) => {
           <text style={{fontWeight: "bold"}}>{DATA ? DATA.daysDates[day] : null}</text>
         </g>
       </svg>
+      <Citations dataSpec={dataSpec} />
     </>
   )
 }

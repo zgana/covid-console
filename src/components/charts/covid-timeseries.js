@@ -157,7 +157,7 @@ const CovidTimeseries = (props) => {
 
   const {
     DATA,
-    meta,
+    META,
   } = useLoad(dataSpec)
 
   // pixel geometry
@@ -188,14 +188,14 @@ const CovidTimeseries = (props) => {
       const value = scale * d[stat]
       var norm = 1
       if (plotNorm === "population") {
-        norm = meta[d.id].population
+        norm = META[d.id].population
       }
       else if (plotNorm === "land_area") {
-        norm = Math.max(meta[d.id].land_area, 1)
+        norm = Math.max(META[d.id].land_area, 1)
       }
       return value / norm
     },
-    [plotNorm, meta, statScales]
+    [plotNorm, META, statScales]
   )
 
 
@@ -237,7 +237,7 @@ const CovidTimeseries = (props) => {
   const xtickLabelProps = () => ({ fill: '#333', fontSize: 20, textAnchor: 'end', dy: 5})
   const ytickLabelProps = () => ({ fill: '#333', fontSize: 20, textAnchor: 'end', dx: -15, dy: 5})
 
-  if (!(DATA && meta)) {
+  if (!(DATA && META)) {
     return ( <svg viewBox={svgGeometry}></svg> )
   }
 
@@ -298,7 +298,6 @@ const CovidTimeseriesBlock = (props) => {
   const enabledStatNames = [
     'new_positives_stl',
     'new_deaths_stl',
-    'new_hospital_stl',
     'new_vaccinations_stl',
     'new_full_vaccinations_stl',
     'hospital_currently',
@@ -306,14 +305,13 @@ const CovidTimeseriesBlock = (props) => {
     'deaths',
     'vaccinations',
     'full_vaccinations',
-    'hospital',
   ]
 
   const defaultDataSpec = allDataSpecs[0]
 
   const [dataSpec, setDataSpec] = useState(defaultDataSpec)
 
-  const { DATA, meta, metaToName } = useLoad(dataSpec)
+  const { DATA, META, metaToName } = useLoad(dataSpec)
   const statNames = DATA ? DATA.statNames : []
 
   const [statOffsets, setStatOffsets] = useState(
@@ -376,10 +374,10 @@ const CovidTimeseriesBlock = (props) => {
           <Select
             isMulti
             options={
-              meta
+              META
                 ? Object
-                .keys(meta)
-                .map( k => ({ value: k, label: metaToName(meta[k]) }) )
+                .keys(META)
+                .map( k => ({ value: k, label: metaToName(META[k]) }) )
                 .sort( (a,b) => a.label.localeCompare(b.label) )
                 : []
             }
