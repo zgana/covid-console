@@ -150,13 +150,13 @@ const useLoad = (spec) => {
   const metaToName = geoFeatureToMetaToName(geoFeatures[0])
 
   const {data: geometry, error: geometryError} = useSWR(geopath, geoFetch)
-  const {data: META, error: metaError} = useSWR(metapath, metaFetch)
+  const {data: META, error: METAError} = useSWR(metapath, metaFetch)
   const {data: DATA, error: DATAError} = useSWR(spec, dataFetch)
   const {data: SOURCES, error: SOURCESError} = useSWR(sourcespath, d3.json)
 
   return {
     geometry, DATA, META, SOURCES, metaToName, geoFeatures, projection,
-    geometryError, DATAError, metaError }
+    geometryError, DATAError, METAError, SOURCESError }
 }
 
 export default useLoad
