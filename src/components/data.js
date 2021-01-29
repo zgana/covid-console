@@ -76,9 +76,9 @@ const metaFetch = spec => {
         d.land_area = 1.0 * (+d.land_area)
       })
 
-      var meta = {}
-      data.forEach(d => (meta[d.id] = d))
-      return meta
+      var META = {}
+      data.forEach(d => (META[d.id] = d))
+      return META
     })
 }
 
@@ -94,6 +94,10 @@ const specToGeopath = (spec) => {
 
 const specToMetapath = (spec) => {
   return '/data/' + spec + '/META.csv'
+}
+
+const specToSourcespath = (spec) => {
+  return '/data/' + spec + '/SOURCES.json'
 }
 
 const specToGeoFeatures = (spec) => {
@@ -140,18 +144,18 @@ const geoFeatureToMetaToName = (geoFeature) => {
 const useLoad = (spec) => {
   const geopath = specToGeopath(spec)
   const metapath = specToMetapath(spec)
+  const sourcespath = specToSourcespath(spec)
   const geoFeatures = specToGeoFeatures(spec)
   const projection = specToProjection(spec)
   const metaToName = geoFeatureToMetaToName(geoFeatures[0])
-  // const gf = spec.includes('World') ? worldGeoFetch : geoFetch
-  const gf = geoFetch
 
-  const {data: geometry, error: geometryError} = useSWR(geopath, gf)
-  const {data: meta, error: metaError} = useSWR(metapath, metaFetch)
+  const {data: geometry, error: geometryError} = useSWR(geopath, geoFetch)
+  const {data: META, error: metaError} = useSWR(metapath, metaFetch)
   const {data: DATA, error: DATAError} = useSWR(spec, dataFetch)
+  const {data: SOURCES, error: SOURCESError} = useSWR(sourcespath, d3.json)
 
   return {
-    geometry, DATA, meta, metaToName, geoFeatures, projection,
+    geometry, DATA, META, SOURCES, metaToName, geoFeatures, projection,
     geometryError, DATAError, metaError }
 }
 
