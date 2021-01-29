@@ -12,7 +12,7 @@ export default function Loading(props) {
           props.children
           :
           (
-            <>
+            <div style={{position: `relative`}}>
               <div style={{opacity: `50%`}}>
                 {props.children}
               </div>
@@ -38,7 +38,7 @@ export default function Loading(props) {
                   L o a d i n g . . .  
                 </span>
               </div>
-            </>
+            </div>
           )
       }
     </>
