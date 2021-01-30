@@ -95,7 +95,7 @@ const NotebookOutput = (props) => {
       <OutputCell>{`available commands:
     keys:               list keyboard shortcuts
     ls:                 list datasets 
-    stats:              list available statistics
+    stats:              list available statistics for a dataset
     map:                display maps
     ts:                 (coming soon!) display timeseries charts
     help:               this command
