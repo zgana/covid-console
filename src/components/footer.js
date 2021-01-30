@@ -18,12 +18,16 @@ export default function Footer() {
         }}>
         <ul>
           <Item>
-            Built by Mike Richman
+            Built by <a
+              href="mailto:mike.d.richman@gmail.com"
+              target="_blank" rel="noopener noreferrer">
+              Mike Richman
+            </a>
           </Item>
           <Item>
-            <a href="mailto:mike.d.richman@gmail.com">
-              mike.d.richman@gmail.com
-            </a>
+            Source code <a
+              href="https://github.com/zgana/covid-console"
+            target="_blank" rel="noopener noreferrer">on GitHub</a>
           </Item>
         </ul>
       </div>
