@@ -1,5 +1,7 @@
 # covid-console
 
+[http://www.covid-console.com/](http://www.covid-console.com/)
+
 This is a nerdy COVID-19 tracking app built in my spare time for fun.  To the
 extent that I will continue having time and enthusiasm for the project, it will
 remain a work in progress.
