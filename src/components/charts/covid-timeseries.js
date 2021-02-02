@@ -18,14 +18,14 @@ import { curveLinear } from '@visx/curve'
 import { Text } from '@visx/text'
 
 // hooks
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useRef } from 'react'
 // import useInterval from '@use-it/interval'
 
 // site
 import Loading from '../loading'
 import styles from './covid-charts.module.css'
 import useLoad, { allDataSpecs, statLabels, normLabels } from '../data'
-import DataSpecSelector from './data-spec-selector.js'
+import Citations from './citations.js'
 
 
 const SliderWithTooltip = createSliderWithTooltip(Slider)
@@ -291,6 +291,7 @@ const CovidTimeseries = (props) => {
           }
         </Group>
       </svg>
+      <Citations dataSpec={dataSpec} />
     </>
   )
 
@@ -302,8 +303,8 @@ const CovidTimeseriesBlock = (props) => {
   const enabledStatNames = [
     'new_positives_stl',
     'new_deaths_stl',
-    'new_vaccinations_stl',
-    'new_full_vaccinations_stl',
+    'new_vaccinations',
+    'new_full_vaccinations',
     'hospital_currently',
     'positives',
     'deaths',
@@ -311,8 +312,6 @@ const CovidTimeseriesBlock = (props) => {
     'full_vaccinations',
   ]
 
-  // const defaultDataSpec = props.dataSpec || allDataSpecs[0]
-  // const [dataSpec, setDataSpec] = useState(defaultDataSpec)
   const dataSpec = props.dataSpec
 
   const { DATA, META, metaToName } = useLoad(dataSpec)
@@ -355,6 +354,8 @@ const CovidTimeseriesBlock = (props) => {
       return out
     }
   }
+
+  const normFieldName = `tsnorm`
 
   return (
     <div className='CovidBlock'>
@@ -421,19 +422,20 @@ const CovidTimeseriesBlock = (props) => {
           className={styles.control}
           onChange={e => setPlotNorm(e.target.value)}
         >
-          <label className={styles.norm}>
-            {/* <input type='radio' value='one' name='norm' defaultChecked /> */}
-            <input type='radio' value='one' name='norm' {...{defaultChecked: true}} />
-            No scaling
-          </label>
-          <label className={styles.norm}>
-            <input type='radio' value='population' name='norm' />
-            Per person
-          </label>
-          <label className={styles.norm}>
-            <input type='radio' value='land_area' name='norm' />
-            Per square mile
-          </label>
+          <fieldset id={normFieldName} style={{border: `0px`}}>
+            <label className={styles.norm}>
+              <input type='radio' value='one' name={normFieldName} {...{defaultChecked: true}} />
+              No scaling
+            </label>
+            <label className={styles.norm}>
+              <input type='radio' value='population' name={normFieldName} />
+              Per person
+            </label>
+            <label className={styles.norm}>
+              <input type='radio' value='land_area' name={normFieldName} />
+              Per square mile
+            </label>
+          </fieldset>
         </div>
         <label className={styles.control}>
           <input

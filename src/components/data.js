@@ -17,7 +17,7 @@ const geoFetch = geoURL => d3.json(geoURL)
         if ('properties' in g && 'CVE_ENT' in g.properties) { // Mexico
           g.id = g.properties.CVE_ENT
         }
-        g.id = +g.id
+        g.id = isNumber(g.id) ? +g.id : g.id
       }
     }
     return geo
@@ -95,6 +95,9 @@ const specToGeopath = (spec) => {
   else if (spec.includes('Mexico')) {
     return '/data/Mexico/topo.json'
   }
+  else if (spec.includes('UK')) {
+    return '/data/UK/topo.json'
+  }
   return '/DoesNotExist'
 }
 
@@ -109,6 +112,9 @@ const specToSourcespath = (spec) => {
 const specToGeoFeatures = (spec) => {
   if (spec === 'Mexico/state') {
     return ['states', ['states', 'states','municipalities']]
+  }
+  else if (spec.includes('UK')) {
+    return ['eer', ['eer', 'eer']]
   }
   else if (spec.includes('county')) {
     return ['counties', ['nation', 'states', 'counties']]
@@ -127,6 +133,15 @@ const specToProjection = (spec) => {
   }
   else if (spec.includes('Mexico')) {
     return d3.geoIdentity().reflectY(true)
+  }
+  else if (spec.includes('UK')) {
+    // http://bl.ocks.org/samuelleach/5130413
+    return d3.geoAlbers()
+        .center([0, 55.4])
+        .rotate([4.4, 0])
+        .parallels([50, 60])
+        .scale(1200 * 5)
+        // .translate([width / 2, height / 2])
   }
   else {
     return null
@@ -190,6 +205,8 @@ const statLabels = {
   new_full_vaccinations_weekly: "Weekly new full vaccinations",
   new_vaccinations_stl: "Daily new vacc. (smoothed)",
   new_full_vaccinations_stl: "Daily new full vacc. (smoothed)",
+  new_vaccinations: "Daily new vaccinations",
+  new_full_vaccinations: "Daily new full vaccinations",
 }
 
 const normLabels = {
@@ -203,7 +220,8 @@ const allDataSpecs = [
   'USA/state',
   'USA/county',
   'Mexico/state',
+  'UK/region'
 ]
 
 
-export { allDataSpecs, statLabels, normLabels }
+export { allDataSpecs, statLabels, normLabels, isNumber }

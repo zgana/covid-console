@@ -2,8 +2,6 @@
 import React from 'react'
 import Slider, { createSliderWithTooltip } from 'rc-slider'
 import 'rc-slider/assets/index.css'
-import Select from 'react-select'
-import 'react-dropdown/style.css'
 import { Tooltip } from "react-svg-tooltip"
 // import queryString from 'query-string'
 import * as d3 from 'd3'
@@ -16,8 +14,7 @@ import useInterval from '@use-it/interval'
 // site
 import Loading from '../loading'
 import styles from './covid-charts.module.css'
-import useLoad, { allDataSpecs, statLabels, normLabels } from '../data'
-import DataSpecSelector from './data-spec-selector.js'
+import useLoad, { statLabels, normLabels, isNumber } from '../data'
 import Citations from './citations.js'
 
 
@@ -116,8 +113,6 @@ const CovidMap = (props) => {
 
   const dataSpec = props.dataSpec
   const { geometry, DATA, META, metaToName, geoFeatures, projection } = useLoad(dataSpec)
-  // console.log(geometry)
-  // const { geometry, META, DATA, geoFeatures } = props
   const { day, stat, plotNorm, plotLog } = props
 
   const geoFeature = geoFeatures[0]
@@ -189,7 +184,7 @@ const CovidMap = (props) => {
   const scaledProjection = useMemo(() => {
     if (geometry && indicateFeatures && projection) {
       const feat = topojson.feature(geometry, geometry.objects[indicateFeatures[0]])
-      return projection.fitWidth(width, feat)
+      return projection.fitSize([width,width/2], feat)
     }
     else {
       return null
@@ -218,14 +213,14 @@ const CovidMap = (props) => {
     else {
       return 610
     }
-  }, [scaledProjection, path])
+  }, [dataSpec, geometry, indicateFeatures, scaledProjection, path])
 
   const svgGeometry = `0 0 ${width} ${height + colorbarHeight}`
 
   const features = useMemo(() => {
     if (geometry) {
       const feat = topojson.feature(geometry, geometry.objects[geoFeature]).features
-      return feat.filter(f => !(isNaN(f.id) || f.properties.name === 'Antarctica'))
+      return feat.filter(f => !((isNumber(f.id) && isNaN(f.id)) || f.properties.name === 'Antarctica'))
     }
     else {
       return []
@@ -396,8 +391,6 @@ const CovidMap = (props) => {
 
 const CovidMapBlock = (props) => {
 
-  // const defaultDataSpec = props.dataSpec || allDataSpecs[0]
-  // const [dataSpec, setDataSpec] = useState(defaultDataSpec)
   const dataSpec = props.dataSpec
 
   const { DATA, geoFeatures } = useLoad(dataSpec)
@@ -407,8 +400,8 @@ const CovidMapBlock = (props) => {
     'positives', 'new_positives_stl',
     'deaths', 'new_deaths_stl',
     // 'hospital', 'new_hospital_stl',
-    'vaccinations', 'new_vaccinations_stl',
-    'full_vaccinations', 'new_full_vaccinations_stl',
+    'vaccinations', 'new_vaccinations',
+    'full_vaccinations', 'new_full_vaccinations',
     'hospital_currently',
   ]
 
@@ -449,6 +442,8 @@ const CovidMapBlock = (props) => {
   if (DATA && !statNames.includes(plotStat) && !props.plotStat) {
     setPlotStat('positives')
   }
+
+  const normFieldName = `mapnorm`
 
   return (
     <div className='CovidBlock'>
@@ -510,15 +505,15 @@ const CovidMapBlock = (props) => {
                 {/* TODO: generate dynamically? */}
                 {
                   enabledStatNames.filter(sn => statNames.includes(sn)).map(sn => (
-                  <label className={styles.stat} key={`plotstat_${sn}`}>
-                    <input
-                      type='radio'
-                      value={sn}
-                      name='stat'
-                      // checked={sn === plotStat}
-                      defaultChecked={sn === plotStat} />
-                    {statLabels[sn]}
-                  </label>
+                    <label className={styles.stat} key={`plotstat_${sn}`}>
+                      <input
+                        type='radio'
+                        value={sn}
+                        name='stat'
+                        // checked={sn === plotStat}
+                        defaultChecked={sn === plotStat} />
+                      {statLabels[sn]}
+                    </label>
                   ))
                 }
               </div>
@@ -533,19 +528,20 @@ const CovidMapBlock = (props) => {
                 className={styles.control}
                 onChange={e => setPlotNorm(e.target.value)}
               >
-                <label className={styles.norm}>
-                  {/* <input type='radio' value='one' name='norm' defaultChecked /> */}
-                  <input type='radio' value='one' name='norm' {...{defaultChecked: true}} />
-                  No scaling
-                </label>
-                <label className={styles.norm}>
-                  <input type='radio' value='population' name='norm' />
-                  Per person
-                </label>
-                <label className={styles.norm}>
-                  <input type='radio' value='land_area' name='norm' />
-                  Per square mile
-                </label>
+                <fieldset id={normFieldName} style={{border: `0px`}}>
+                  <label className={styles.norm}>
+                    <input type='radio' value='one' name={normFieldName} {...{defaultChecked: true}} />
+                    No scaling
+                  </label>
+                  <label className={styles.norm}>
+                    <input type='radio' value='population' name={normFieldName} />
+                    Per person
+                  </label>
+                  <label className={styles.norm}>
+                    <input type='radio' value='land_area' name={normFieldName} />
+                    Per square mile
+                  </label>
+                </fieldset>
               </div>
               <label className={styles.control}>
                 <input
