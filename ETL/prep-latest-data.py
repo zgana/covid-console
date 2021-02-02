@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
+from glob import glob
 import os
 
 import numpy as np
 import pandas as pd
+import geopandas as gpd
 
 import statsmodels.api as sm
 
@@ -128,6 +130,42 @@ def get_county_data(pop):
 
     return data
 
+def Mexico_get_state_data():
+    print('Loading Mexico state-level from https://datos.covid-19.conacyt.mx/ ...')
+    dir = f'{ETL_DIR}/Mexico'
+    geo = gpd.read_file(f'{dir}/mx.json')
+    name_mapping = geo['CVE_ENT NOM_ENT'.split()].copy()
+    name_mapping.columns = 'id name'.split()
+    name_mapping['id'] = name_mapping.id.astype(int)
+
+
+    def mexico_load(filename, col):
+        x = pd.read_csv(filename).rename(columns={'cve_ent':'id', 'poblacion':'population'})
+        x.columns = list(x.columns[:3]) + list(pd.to_datetime(x.columns[3:], format='%d-%m-%Y'))
+        return (
+            x
+            .set_index('id population nombre'.split())
+            .T.cumsum().T
+            .reset_index()
+            .melt('id population nombre'.split(), var_name='date', value_name=col)
+            .merge(name_mapping)
+            .drop(columns='nombre')
+        )
+        return
+
+    positives = mexico_load(
+        sorted(glob(f'{dir}/data/Casos_Diarios_Estado_Nacional_Confirmados_*.csv'))[-1],
+        'positives')
+    deaths = mexico_load(
+        sorted(glob(f'{dir}/data/Casos_Diarios_Estado_Nacional_Defunciones_*.csv'))[-1],
+        'deaths')
+
+    data = positives.merge(deaths)
+    data['days'] = (data.date - data.date.max()).dt.days
+    data = data['id date days positives deaths name population'.split()].copy()
+    return data
+
+
 def augment_timeseries(data, id_col):
     print('Augmenting...')
     d = data
@@ -191,5 +229,11 @@ data.to_csv(outfile, index=False)
 data = get_county_data(pop)
 data = augment_timeseries(data, 'fips')
 outfile = f'{ETL_DIR}/data/latest/covid19-latest-county.csv'
+print(f'Writing {outfile} ...')
+data.to_csv(outfile, index=False)
+
+data = Mexico_get_state_data()
+data = augment_timeseries(data, 'id')
+outfile = f'{ETL_DIR}/data/latest/Mexico-covid19-latest-state.csv'
 print(f'Writing {outfile} ...')
 data.to_csv(outfile, index=False)
