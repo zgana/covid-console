@@ -131,7 +131,7 @@ def get_county_data(pop):
     return data
 
 def Mexico_get_state_data():
-    print('Loading Mexico state-level from https://datos.covid-19.conacyt.mx/ ...')
+    print('Loading Mexico state-level pre-fetched from https://datos.covid-19.conacyt.mx/ ...')
     dir = f'{ETL_DIR}/Mexico'
     geo = gpd.read_file(f'{dir}/mx.json')
     name_mapping = geo['CVE_ENT NOM_ENT'.split()].copy()
@@ -165,6 +165,16 @@ def Mexico_get_state_data():
     data = data['id date days positives deaths name population'.split()].copy()
     return data
 
+def UK_get_region_data():
+    data = pd.read_csv(
+        'https://api.coronavirus.data.gov.uk/v2/data?areaType=region&metric=cumCasesBySpecimenDate&metric=cumDeathsByDeathDate&format=csv',
+        parse_dates=['date']
+    )
+    data.columns = 'date areaType id name positives deaths'.split()
+    data['days'] = (data.date - data.date.max()).dt.days
+    # TODO: why does this make things match with the topojson?
+    data['id'] = data.id.str.replace('E12', 'E15')
+    return data
 
 def augment_timeseries(data, id_col):
     print('Augmenting...')
@@ -235,5 +245,11 @@ data.to_csv(outfile, index=False)
 data = Mexico_get_state_data()
 data = augment_timeseries(data, 'id')
 outfile = f'{ETL_DIR}/data/latest/Mexico-covid19-latest-state.csv'
+print(f'Writing {outfile} ...')
+data.to_csv(outfile, index=False)
+
+data = UK_get_region_data()
+data = augment_timeseries(data, 'id')
+outfile = f'{ETL_DIR}/data/latest/UK-covid19-latest-region.csv'
 print(f'Writing {outfile} ...')
 data.to_csv(outfile, index=False)

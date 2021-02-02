@@ -68,5 +68,8 @@ yarn-error.log
 # Yarn Integrity file
 .yarn-integrity
 
-# data
+# more stuff
+.ipynb_checkpoints
 data/
+dev.ipynb
+ETL/*/*.json

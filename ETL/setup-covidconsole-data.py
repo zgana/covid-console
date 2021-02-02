@@ -12,7 +12,9 @@ def tidy_data(data):
         'date days id'
         ' deaths positives hospital hospital_currently vaccinations full_vaccinations'
         # ' new_deaths_weekly new_positives_weekly new_hospital_weekly new_vaccinations_weekly new_full_vaccinations_weekly'
-        ' new_deaths_stl new_positives_stl new_hospital_stl new_vaccinations_stl new_full_vaccinations_stl'
+        ' new_deaths_stl new_positives_stl new_hospital_stl'
+        #' new_vaccinations_stl new_full_vaccinations_stl'
+        ' new_vaccinations new_full_vaccinations'
         .split()
     )
     keys = [key for key in keys if key in data.columns]
@@ -49,7 +51,47 @@ def Mexico():
     shutil.copyfile(f'{ETL_DIR}/Mexico/mx.json', f'{DATA_DIR}/Mexico/topo.json')
 
 
+def UK():
+    data = pd.read_csv(f'{ETL_DIR}/data/latest/UK-covid19-latest-region.csv', parse_dates=['date'])
+    data['name_lower'] = data.name.str.lower()
+    META = pd.read_html('https://en.wikipedia.org/wiki/Regions_of_England')[4]
+    META = META[META.columns[:4]]
+    META.columns = 'name population change area'.split()
+    META['name_lower'] = META.name.str.lower()
+    META['land_area'] = (
+        META.area
+        .str.replace('.*\(', '')
+        .str.replace('[^\d]', '')
+    )
+    META = (
+        META
+        .drop(columns='change area'.split())
+        .merge(data['id name_lower'.split()].drop_duplicates())
+        .drop(columns='name_lower')
+    )
+    SOURCES = [
+        dict(name='Public Health England',
+             url='https://coronavirus.data.gov.uk/details/download')
+    ]
+
+    data = tidy_data(data.drop(columns='name'.split()))
+    data_dir = f'{DATA_DIR}/UK/region'
+    os.makedirs(data_dir, exist_ok=True)
+    print(f'Writing to {data_dir} ...')
+    data.to_csv(f'{data_dir}/data.csv', index=False)
+    META.to_csv(f'{data_dir}/META.csv', index=False)
+    with open(f'{data_dir}/SOURCES.json', 'wt') as f:
+        json.dump(SOURCES, f)
+
+    # also need to bring geo
+    # https://martinjc.github.io/UK-GeoJSON/
+    shutil.copyfile(f'{ETL_DIR}/UK/topo_eer.json', f'{DATA_DIR}/UK/topo.json')
+
+
+
 Mexico()
+UK()
+
 
 world = pd.read_csv(f'{ETL_DIR}/data/latest/covid19-latest-world.csv', parse_dates=['date'])
 world_codes = pd.read_html('https://www.iban.com/country-codes')[0]
