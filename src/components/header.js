@@ -52,8 +52,7 @@ export default function Header() {
         </Link>
         <ul style={{ listStyle: `none`, float: `right`, margin: 0, marginLeft: `auto`}}>
           <ListLink to="/">home</ListLink>
-          <ListLink to="/maps/">maps</ListLink>
-          <ListLink to="/timeseries">timeseries</ListLink>
+          <ListLink to="/console/">console</ListLink>
           <ListLink to="/about/">about</ListLink>
           {/* <ListLink to="/test">test</ListLink> */}
         </ul>

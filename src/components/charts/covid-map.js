@@ -17,6 +17,7 @@ import useInterval from '@use-it/interval'
 import Loading from '../loading'
 import styles from './covid-charts.module.css'
 import useLoad, { allDataSpecs, statLabels, normLabels } from '../data'
+import DataSpecSelector from './data-spec-selector.js'
 import Citations from './citations.js'
 
 
@@ -186,7 +187,7 @@ const CovidMap = (props) => {
   const width = 975
 
   const scaledProjection = useMemo(() => {
-    if (geometry && projection && indicateFeatures) {
+    if (geometry && indicateFeatures && projection) {
       const feat = topojson.feature(geometry, geometry.objects[indicateFeatures[0]])
       return projection.fitWidth(width, feat)
     }
@@ -203,8 +204,13 @@ const CovidMap = (props) => {
 
   const height = useMemo(() => {
     if (scaledProjection) {
-      const outline = {type: 'Sphere'}
-      // const feat = topojson.feature(geometry, geometry.objects[indicateFeatures[0]])
+      var outline
+      if (dataSpec.includes('World')) {
+        outline = {type: 'Sphere'}
+      }
+      else {
+        outline = topojson.feature(geometry, geometry.objects[indicateFeatures[0]])
+      }
       const bounds = path.bounds(outline)
       const [y0, y1] = [bounds[0][1], bounds[1][1]]
       return Math.ceil(Math.abs(y1 - y0))
@@ -390,19 +396,19 @@ const CovidMap = (props) => {
 
 const CovidMapBlock = (props) => {
 
-  const defaultDataSpec = props.dataSpec || allDataSpecs[0]
-
-  const [dataSpec, setDataSpec] = useState(defaultDataSpec)
+  // const defaultDataSpec = props.dataSpec || allDataSpecs[0]
+  // const [dataSpec, setDataSpec] = useState(defaultDataSpec)
+  const dataSpec = props.dataSpec
 
   const { DATA, geoFeatures } = useLoad(dataSpec)
   const geoFeature = geoFeatures[0]
   const statNames = DATA ? DATA.statNames : []
   const enabledStatNames = [
-    'positives', 'new_positives_weekly',
-    'deaths', 'new_deaths_weekly',
-    // 'hospital', 'new_hospital_weekly',
-    'vaccinations', 'new_vaccinations_weekly',
-    'full_vaccinations', 'new_full_vaccinations_weekly',
+    'positives', 'new_positives_stl',
+    'deaths', 'new_deaths_stl',
+    // 'hospital', 'new_hospital_stl',
+    'vaccinations', 'new_vaccinations_stl',
+    'full_vaccinations', 'new_full_vaccinations_stl',
     'hospital_currently',
   ]
 
@@ -446,18 +452,6 @@ const CovidMapBlock = (props) => {
 
   return (
     <div className='CovidBlock'>
-      {
-        props.dataSpec ? null : (
-          <div className={styles.controls}>
-            <Select
-              options={allDataSpecs.map( k => ({ value: k, label: k }) )}
-              value={dataSpec}
-              placeholder={dataSpec}
-              onChange={x => setDataSpec(x.value)}
-            />
-          </div>
-        )
-      }
       <Loading done={DATA}>
         <CovidMap
           dataSpec={dataSpec}

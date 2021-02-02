@@ -6,16 +6,11 @@ import useLoad from '../data'
 const Citation = (props) => {
   const { source, isLast } = props
 
-  console.log(source)
-  console.log(isLast)
-
   return (
     <span
       style={{
         display: `inline-block`,
         padding: `0 .2em`,
-        // textAlign: `right`,
-        // listStylePosition: `inside`,
       }}
     >
       <a href={source.url} target="_blank" rel="noopener noreferrer">{source.name}</a>
@@ -51,7 +46,7 @@ export default function Citations(props) {
         {numSources === 1 ? 'Source:' : 'Sources:'}
 
         {Object.keys(SOURCES).map(i => (
-          <Citation source={SOURCES[i]} isLast={parseInt(i) === numSources - 1} />
+          <Citation key={i} source={SOURCES[i]} isLast={parseInt(i) === numSources - 1} />
         ))}
       </div>
     </>

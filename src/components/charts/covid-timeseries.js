@@ -25,6 +25,7 @@ import { useState, useMemo, useCallback } from 'react'
 import Loading from '../loading'
 import styles from './covid-charts.module.css'
 import useLoad, { allDataSpecs, statLabels, normLabels } from '../data'
+import DataSpecSelector from './data-spec-selector.js'
 
 
 const SliderWithTooltip = createSliderWithTooltip(Slider)
@@ -103,14 +104,14 @@ const StatSelector = (props) => {
         disabled={!selected}
         onChange={x => setScale(scaleScale(x))}
         value={scaleUnScale(scale)} startPoint={0}
-        min={-3} max={3} step={.005}
+        min={-3.5} max={3.5} step={.005}
         style={{
           display: `inline-block`,
           width: `20%`,
           marginLeft: `2%`,
         }}
         tipFormatter={
-          x => `${scaleScale(x) < 1 ? scaleScale(x).toFixed(3) : scaleScale(x).toFixed(1)}x`
+          x => `${scaleScale(x) < 1 ? scaleScale(x).toFixed(3) : scaleScale(x).toFixed(2)}x`
         }
       />
       <div
@@ -124,15 +125,15 @@ const StatSelector = (props) => {
           <label className={`${styles.ls} ${styles.bold}`} htmlFor={`${stat}-ls1`} >
             &#8212;
           </label>
-          <input id={`${stat}-ls2`} type='radio' value={[w2,'solid']} name={`ls_${stat}`}
-            style={lsInputStyle} disabled={!selected} />
-          <label className={styles.ls} htmlFor={`${stat}-ls2`}>
-            &#8212;
-          </label>
           <input id={`${stat}-ls3`} type='radio' value={[w1,'dashed']} name={`ls_${stat}`}
             style={lsInputStyle} disabled={!selected} />
           <label className={`${styles.ls} ${styles.bold}`} htmlFor={`${stat}-ls3`}>
             --
+          </label>
+          <input id={`${stat}-ls2`} type='radio' value={[w2,'solid']} name={`ls_${stat}`}
+            style={lsInputStyle} disabled={!selected} />
+          <label className={styles.ls} htmlFor={`${stat}-ls2`}>
+            &#8212;
           </label>
           <input id={`${stat}-ls4`} type='radio' value={[w2,'dashed']} name={`ls_${stat}`}
             style={lsInputStyle} disabled={!selected} />
@@ -244,50 +245,53 @@ const CovidTimeseries = (props) => {
   const yAxisLabel = 'Value ' + normLabels[plotNorm]
 
   return (
-    <svg viewBox={svgGeometry}>
-      <Group left={margin.left} top={margin.top}>
-        <GridRows scale={yScale} width={panelWidth} height={panelHeight} stroke="#eee" />
-        <GridColumns scale={xAxisScale} width={panelWidth} height={panelHeight} stroke="#eee" />
-        <AxisLeft
-          scale={yScale}
-          numTicks={5}
-          tickLabelProps={ytickLabelProps}
-        />
-        <AxisBottom
-          scale={xAxisScale}
-          tickLabelProps={xtickLabelProps}
-          numTicks={5}
-          top={panelHeight} />
-      </Group>
-      <Group top={margin.top + panelHeight/2}>
-        <Text angle={-90} textAnchor='middle' verticalAnchor='start'>{yAxisLabel}</Text>
-      </Group>
-      <Group left={margin.left} top={margin.top}>
-        {
-          tdata && plotIds && plotStats
-            ? 
-            plotStats.map(stat => plotIds.map(id => {
-              const i = plotIds.indexOf(id)
-              const color = i >= 0 ? chroma(colorCycle[i%colorCycle.length]) : null
-              const [w, dash] = statLinestyles[stat].split(',')
-              return (
-                <LinePath
-                  key={`curve_${id}`}
-                  curve={curveLinear}
-                  data={tdata[id]}
-                  x={d => xScale(d.days + statOffsets[stat])}
-                  y={d => yScale(Math.max(minY, extractValue(d, stat)))}
-                  stroke={color.alpha(.5).css()}
-                  strokeWidth={w}
-                  strokeDasharray={dash === 'solid' ? '1,0' : '4,2'}
-                />
+    <>
+      <h3>timeseries</h3>
+      <svg viewBox={svgGeometry}>
+        <Group left={margin.left} top={margin.top}>
+          <GridRows scale={yScale} width={panelWidth} height={panelHeight} stroke="#eee" />
+          <GridColumns scale={xAxisScale} width={panelWidth} height={panelHeight} stroke="#eee" />
+          <AxisLeft
+            scale={yScale}
+            numTicks={5}
+            tickLabelProps={ytickLabelProps}
+          />
+          <AxisBottom
+            scale={xAxisScale}
+            tickLabelProps={xtickLabelProps}
+            numTicks={5}
+            top={panelHeight} />
+        </Group>
+        <Group top={margin.top + panelHeight/2}>
+          <Text angle={-90} textAnchor='middle' verticalAnchor='start'>{yAxisLabel}</Text>
+        </Group>
+        <Group left={margin.left} top={margin.top}>
+          {
+            tdata && plotIds && plotStats
+              ? 
+              plotStats.map(stat => plotIds.map(id => {
+                const i = plotIds.indexOf(id)
+                const color = i >= 0 ? chroma(colorCycle[i%colorCycle.length]) : null
+                const [w, dash] = statLinestyles[stat].split(',')
+                return (
+                  <LinePath
+                    key={`curve_${id}`}
+                    curve={curveLinear}
+                    data={tdata[id]}
+                    x={d => xScale(d.days + statOffsets[stat])}
+                    y={d => yScale(Math.max(minY, extractValue(d, stat)))}
+                    stroke={color.alpha(.5).css()}
+                    strokeWidth={w}
+                    strokeDasharray={dash === 'solid' ? '1,0' : '4,2'}
+                  />
+                )
+              })
               )
-            })
-            )
-          : null
-        }
-      </Group>
-    </svg>
+              : null
+          }
+        </Group>
+      </svg>
+    </>
   )
 
 };
@@ -307,9 +311,9 @@ const CovidTimeseriesBlock = (props) => {
     'full_vaccinations',
   ]
 
-  const defaultDataSpec = allDataSpecs[0]
-
-  const [dataSpec, setDataSpec] = useState(defaultDataSpec)
+  // const defaultDataSpec = props.dataSpec || allDataSpecs[0]
+  // const [dataSpec, setDataSpec] = useState(defaultDataSpec)
+  const dataSpec = props.dataSpec
 
   const { DATA, META, metaToName } = useLoad(dataSpec)
   const statNames = DATA ? DATA.statNames : []
@@ -325,7 +329,13 @@ const CovidTimeseriesBlock = (props) => {
     Object.fromEntries(enabledStatNames.map(x => [x, '4,solid']))
   )
 
-  const [plotItems, setPlotItems] = useState([])
+  const [plotItems, setPlotItems] = useState(() => {
+    var allPlotItems = {}
+    for (const ds of allDataSpecs) {
+      allPlotItems[ds] = []
+    }
+    return allPlotItems
+  })
 
   const [plotStats, setPlotStats] = useState(['new_positives_stl'])
   const [plotNorm, setPlotNorm] = useState('one')
@@ -333,7 +343,7 @@ const CovidTimeseriesBlock = (props) => {
 
   const locSelectStyles = {
     multiValue: (styles, { data }) => {
-      const i = plotItems.indexOf(data)
+      const i = plotItems[dataSpec].indexOf(data)
       const color = i >= 0 ? chroma(colorCycle[i%colorCycle.length]) : null
       var out = {...styles}
       if (i >= 0) {
@@ -348,20 +358,12 @@ const CovidTimeseriesBlock = (props) => {
 
   return (
     <div className='CovidBlock'>
-      <div className={styles.controls}>
-        <Select
-          options={allDataSpecs.map( k => ({ value: k, label: k }) )}
-          value={dataSpec}
-          placeholder={dataSpec}
-          onChange={x => [setDataSpec(x.value), setPlotItems([])]}
-        />
-      </div>
       <Loading done={DATA}>
         {/* <h3>.</h3> */}
         <CovidTimeseries
           dataSpec={dataSpec}
           plotStats={plotStats}
-          plotIds={plotItems ? plotItems.map(it => it.value) : []}
+          plotIds={plotItems[dataSpec] ? plotItems[dataSpec].map(it => it.value) : []}
           plotNorm={plotNorm}
           plotLogY={plotLogY}
           statScales={statScales}
@@ -375,15 +377,14 @@ const CovidTimeseriesBlock = (props) => {
             isMulti
             options={
               META
-                ? Object
-                .keys(META)
+                ? Object.keys(META)
                 .map( k => ({ value: k, label: metaToName(META[k]) }) )
                 .sort( (a,b) => a.label.localeCompare(b.label) )
                 : []
             }
-            value={plotItems}
-            clearValue={() => setPlotItems([])}
-            onChange={x => setPlotItems(x)}
+            value={plotItems[dataSpec]}
+            clearValue={() => setPlotItems({...plotItems, [dataSpec]: []})}
+            onChange={x => setPlotItems({...plotItems, [dataSpec]: x})}
             styles={locSelectStyles}
           />
         </div>

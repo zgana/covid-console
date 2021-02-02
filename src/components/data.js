@@ -14,6 +14,9 @@ const geoFetch = geoURL => d3.json(geoURL)
   .then(geo => {
     for (let key of Object.keys(geo.objects)) {
       for (let g of geo.objects[key].geometries) {
+        if ('properties' in g && 'CVE_ENT' in g.properties) { // Mexico
+          g.id = g.properties.CVE_ENT
+        }
         g.id = +g.id
       }
     }
@@ -89,6 +92,9 @@ const specToGeopath = (spec) => {
   else if (spec.includes('World')) {
     return 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'
   }
+  else if (spec.includes('Mexico')) {
+    return '/data/Mexico/topo.json'
+  }
   return '/DoesNotExist'
 }
 
@@ -101,7 +107,10 @@ const specToSourcespath = (spec) => {
 }
 
 const specToGeoFeatures = (spec) => {
-  if (spec.includes('county')) {
+  if (spec === 'Mexico/state') {
+    return ['states', ['states', 'states','municipalities']]
+  }
+  else if (spec.includes('county')) {
     return ['counties', ['nation', 'states', 'counties']]
   }
   else if (spec.includes('state')) {
@@ -115,6 +124,9 @@ const specToGeoFeatures = (spec) => {
 const specToProjection = (spec) => {
   if (spec.includes('country')) {
     return d3.geoNaturalEarth1()
+  }
+  else if (spec.includes('Mexico')) {
+    return d3.geoIdentity().reflectY(true)
   }
   else {
     return null
@@ -190,6 +202,7 @@ const allDataSpecs = [
   'World/country',
   'USA/state',
   'USA/county',
+  'Mexico/state',
 ]
 
 
