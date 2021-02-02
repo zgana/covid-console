@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Parser from 'yargs-parser/browser'
 import { GlobalHotKeys } from 'react-hotkeys'
 
@@ -18,6 +18,7 @@ const globalKeyMap = {
 }
 
 
+const SHOW_PARSED_ARGS = false
 const ParsedArgs = (props) => {
 
   const { pos, cmd, args, opts } = props
@@ -178,8 +179,11 @@ To find available datasets and statistics, see the 'ls' and 'stats' commands.`}<
 
   return (
     <>
-      {/* <ParsedArgs cmd={cmd} args={args} opts={opts} pos={pos} /> */}
-      <OutputCell>{`unknown command '${cmd}'; try 'help'`}</OutputCell>
+      {
+        SHOW_PARSED_ARGS
+          ? (<ParsedArgs cmd={cmd} args={args} opts={opts} pos={pos} />)
+          : (<OutputCell>{`unknown command '${cmd}'; try 'help'`}</OutputCell>)
+      }
     </>
   )
 
