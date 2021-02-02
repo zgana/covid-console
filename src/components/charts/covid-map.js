@@ -155,14 +155,35 @@ const CovidMap = (props) => {
       return 0
     }
     var vals = []
-    for (const iday of Object.keys(DATA.data)) {
+    var gotOne = false
+    const allDays = Object.keys(DATA.data).sort((a,b) => (+a) - (+b))
+
+    // hack to deal with "catch-up" vaccination data
+    DAYS:
+    for (const iday of allDays) {
+      ITEMS:
       for (const iid of Object.keys(DATA.data[iday])) {
         const val = extractValue(DATA.data[iday][iid])
         if (val) {
+          if (!gotOne) {
+            gotOne = true
+            if (stat.includes('vaccinations')) {
+              break ITEMS
+            }
+          }
           vals.push(val)
         }
       }
     }
+
+    // for (const iday of Object.keys(DATA.data)) {
+    //   for (const iid of Object.keys(DATA.data[iday])) {
+    //     const val = extractValue(DATA.data[iday][iid])
+    //     if (val) {
+    //       vals.push(val)
+    //     }
+    //   }
+    // }
     var sortVals = vals.sort((a,b) => a - b)
     const idx = Math.floor(.975 * (sortVals.length - 1))
     const m = sortVals[idx]
