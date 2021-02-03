@@ -14,6 +14,7 @@
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1"
   },
   "dependencies": {
+    "@reach/router": "^1.3.4",
     "@use-it/interval": "^1.0.0",
     "@visx/axis": "^1.2.0",
     "@visx/clip-path": "^1.0.0",
@@ -33,6 +34,7 @@
     "gatsby-plugin-typography": "^2.7.0",
     "gatsby-source-filesystem": "^2.7.0",
     "gatsby-transformer-csv": "^2.6.0",
+    "prop-types": "^15.7.2",
     "query-string": "^6.13.7",
     "rc-slider": "^9.6.4",
     "react": "^16.12.0",

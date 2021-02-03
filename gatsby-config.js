@@ -5,6 +5,10 @@
 module.exports = {
   siteMetadata: {
     title: `covid-console`,
+    description: `Another COVID-19 tracker`,
+    url: `http://www.covid-console.com`, // no trailing slash!
+    image: `/preview-image.png`,
+    twitterUsername: `@mikedrichman`,
   },
   plugins: [
     {
