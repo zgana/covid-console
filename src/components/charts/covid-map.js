@@ -159,7 +159,6 @@ const CovidMap = (props) => {
     const allDays = Object.keys(DATA.data).sort((a,b) => (+a) - (+b))
 
     // hack to deal with "catch-up" vaccination data
-    DAYS:
     for (const iday of allDays) {
       ITEMS:
       for (const iid of Object.keys(DATA.data[iday])) {
@@ -188,7 +187,7 @@ const CovidMap = (props) => {
     const idx = Math.floor(.975 * (sortVals.length - 1))
     const m = sortVals[idx]
     return m > minPosY ? m : sortVals[sortVals.length - 1]
-  }, [DATA, minPosY, extractValue])
+  }, [DATA, stat, minPosY, extractValue])
 
   const linColorScale = useMemo(() => {
     return d3.scaleSequential(d3.interpolateBlues).domain([0, maxY])
